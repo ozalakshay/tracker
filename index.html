@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Wellness Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .date {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .quote-section {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 1.1em;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .columns {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .column {
+            flex: 1;
+            padding: 40px;
+            position: relative;
+        }
+
+        .water-column {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-right: 1px solid #e9ecef;
+        }
+
+        .sleep-column {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+        }
+
+        .column-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .column-header h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .column-header .subtitle {
+            font-size: 1.1em;
+            color: #7f8c8d;
+        }
+
+        .action-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .water-button {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .sleep-button {
+            background: linear-gradient(45deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .stats {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1em;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .message.info {
+            background: #cce7ff;
+            color: #004085;
+            border: 1px solid #b3d9ff;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .history {
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .history-item {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            border-left: 4px solid #007bff;
+        }
+
+        @media (max-width: 768px) {
+            .columns {
+                flex-direction: column;
+            }
+            
+            .water-column {
+                border-right: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .column {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 Daily Wellness Tracker 🌟</h1>
+            <div class="date" id="currentDate"></div>
+        </div>
+
+        <div class="quote-section">
+            <div class="quote" id="dailyQuote">Loading inspirational quote...</div>
+        </div>
+
+        <div class="columns">
+            <div class="column water-column">
+                <div class="column-header">
+                    <h2>💧 Water</h2>
+                    <div class="subtitle">Stay Hydrated</div>
+                </div>
+
+                <button class="action-button water-button" onclick="logWater()">
+                    💧 Drink Water 💧
+                </button>
+
+                <div id="waterMessage"></div>
+
+                <div class="stats">
+                    <h3>📊 Today's Stats</h3>
+                    <div class="stat-item">
+                        <strong>Glasses Today:</strong> <span id="waterCount">0</span> 🥤
+                    </div>
+                    <div class="stat-item">
+                        <strong>Last Drink:</strong> <span id="lastWaterTime">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Time Since Last:</strong> <span id="waterTimeDiff">-</span>
+                    </div>
+                </div>
+
+                <div class="history" id="waterHistory">
+                    <h4>📝 Water History</h4>
+                    <div id="waterHistoryList"></div>
+                </div>
+            </div>
+
+            <div class="column sleep-column">
+                <div class="column-header">
+                    <h2>😴 Sleep</h2>
+                    <div class="subtitle">Rest Well</div>
+                </div>
+
+                <button class="action-button sleep-button" onclick="logSleep()">
+                    😴 Log Sleep 😴
+                </button>
+
+                <div id="sleepMessage"></div>
+
+                <div class="stats">
+                    <h3>📊 Today's Stats</h3>
+                    <div class="stat-item">
+                        <strong>Sleep Sessions:</strong> <span id="sleepCount">0</span> 🛌
+                    </div>
+                    <div class="stat-item">
+                        <strong>Last Sleep:</strong> <span id="lastSleepTime">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Time Since Last:</strong> <span id="sleepTimeDiff">-</span>
+                    </div>
+                </div>
+
+                <div class="history" id="sleepHistory">
+                    <h4>📝 Sleep History</h4>
+                    <div id="sleepHistoryList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let waterData = [];
+        let sleepData = [];
+        let currentDate = new Date().toDateString();
+
+        const quotes = [
+            "Every day is a fresh start! 🌅",
+            "Take care of your body, it's the only place you have to live. 💪",
+            "Small steps every day lead to big changes. 🚶‍♀️",
+            "Your health is your wealth! 💎",
+            "Progress, not perfection! 🌟",
+            "Be kind to yourself today. 💕",
+            "You are stronger than you think! 💪",
+            "Today is full of possibilities! ✨",
+            "Wellness is not a destination, it's a journey. 🛤️",
+            "Take time to make your soul happy. 😊"
+        ];
+
+        function initApp() {
+            displayCurrentDate();
+            displayDailyQuote();
+            checkNewDay();
+            updateDisplay();
+        }
+
+        function displayCurrentDate() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function displayDailyQuote() {
+            const today = new Date().getDate();
+            const quoteIndex = today % quotes.length;
+            document.getElementById('dailyQuote').textContent = quotes[quoteIndex];
+        }
+
+        function checkNewDay() {
+            const today = new Date().toDateString();
+            if (currentDate !== today) {
+                waterData = [];
+                sleepData = [];
+                currentDate = today;
+                displayDailyQuote();
+            }
+        }
+
+        function logWater() {
+            const now = new Date();
+            waterData.push(now);
+            
+            const timeDiff = getTimeDifference(waterData);
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            let message = '';
+            if (waterData.length === 1) {
+                message = "Great start! First glass of the day! 🎉💧";
+            } else if (hours < 2) {
+                message = "Keep it up! Great hydration habits! 👏💧✨";
+            } else if (hours >= 2 && hours < 4) {
+                message = "Good job staying hydrated! 👍💧";
+            } else {
+                message = "Time to drink more water regularly! 💧⏰";
+            }
+            
+            showMessage('waterMessage', message, hours < 2 ? 'success' : hours < 4 ? 'info' : 'warning');
+            updateDisplay();
+        }
+
+        function logSleep() {
+            const now = new Date();
+            sleepData.push(now);
+            
+            const timeDiff = getTimeDifference(sleepData);
+            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+            
+            let message = '';
+            if (sleepData.length === 1) {
+                message = "First sleep log of the day! 😴🌙";
+            } else if (hours >= 7) {
+                message = "Excellent! You're getting proper rest! 😴✨🌟";
+            } else if (hours >= 5) {
+                message = "Not bad, but try to get more sleep! 😴💤";
+            } else {
+                message = "You need more sleep! Take care of yourself! 😴⚠️";
+            }
+            
+            showMessage('sleepMessage', message, hours >= 7 ? 'success' : hours >= 5 ? 'info' : 'warning');
+            updateDisplay();
+        }
+
+        function getTimeDifference(data) {
+            if (data.length < 2) return 0;
+            return data[data.length - 1] - data[data.length - 2];
+        }
+
+        function showMessage(elementId, message, type) {
+            const messageEl = document.getElementById(elementId);
+            messageEl.innerHTML = `<div class="message ${type}">${message}</div>`;
+            setTimeout(() => {
+                messageEl.innerHTML = '';
+            }, 5000);
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+
+        function formatTimeDifference(milliseconds) {
+            const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+            const minutes = Math.floor((milliseconds % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hours === 0) {
+                return `${minutes} min`;
+            } else if (minutes === 0) {
+                return `${hours} hr`;
+            } else {
+                return `${hours}h ${minutes}m`;
+            }
+        }
+
+        function updateDisplay() {
+            // Update water stats
+            document.getElementById('waterCount').textContent = waterData.length;
+            if (waterData.length > 0) {
+                const lastWater = waterData[waterData.length - 1];
+                document.getElementById('lastWaterTime').textContent = formatTime(lastWater);
+                
+                const timeDiff = getTimeDifference(waterData);
+                document.getElementById('waterTimeDiff').textContent = 
+                    waterData.length > 1 ? formatTimeDifference(timeDiff) : '-';
+            }
+
+            // Update sleep stats
+            document.getElementById('sleepCount').textContent = sleepData.length;
+            if (sleepData.length > 0) {
+                const lastSleep = sleepData[sleepData.length - 1];
+                document.getElementById('lastSleepTime').textContent = formatTime(lastSleep);
+                
+                const timeDiff = getTimeDifference(sleepData);
+                document.getElementById('sleepTimeDiff').textContent = 
+                    sleepData.length > 1 ? formatTimeDifference(timeDiff) : '-';
+            }
+
+            // Update history
+            updateHistory();
+        }
+
+        function updateHistory() {
+            const waterHistoryList = document.getElementById('waterHistoryList');
+            const sleepHistoryList = document.getElementById('sleepHistoryList');
+            
+            waterHistoryList.innerHTML = '';
+            sleepHistoryList.innerHTML = '';
+            
+            // Water history
+            waterData.slice(-5).reverse().forEach((time, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `💧 ${formatTime(time)}`;
+                waterHistoryList.appendChild(item);
+            });
+            
+            if (waterData.length === 0) {
+                waterHistoryList.innerHTML = '<div class="history-item">No water logged yet today</div>';
+            }
+
+            // Sleep history
+            sleepData.slice(-5).reverse().forEach((time, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `😴 ${formatTime(time)}`;
+                sleepHistoryList.appendChild(item);
+            });
+            
+            if (sleepData.length === 0) {
+                sleepHistoryList.innerHTML = '<div class="history-item">No sleep logged yet today</div>';
+            }
+        }
+
+        // Initialize the app when page loads
+        window.addEventListener('load', initApp);
+    </script>
+</body>
+</html>
